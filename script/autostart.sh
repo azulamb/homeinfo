@@ -1,3 +1,3 @@
 #!/bin/sh
 
-chromium-browser --start-fullscreen https://www.google.com/
+chromium-browser --disable-features=InfiniteSessionRestore --start-fullscreen https://www.google.com/
