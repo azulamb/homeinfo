@@ -1,3 +1,3 @@
 #!/bin/sh
 
-chromium-browser --incognito --start-fullscreen https://www.google.com/
+chromium-browser --incognito --start-fullscreen https://azulamb.github.io/homeinfo/
