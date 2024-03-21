@@ -14,9 +14,10 @@ function loadHoliday() {
 	fetch('https://cal.lapis.dev/holiday.json').then((response) => {
 		return response.json();
 	}).then((json) => {
-		console.log(json);
+		return json;
 	}).catch((error) => {
 		console.error(error);
+		return {};
 	});
 }
 document.addEventListener('DOMContentLoaded', async () => {
