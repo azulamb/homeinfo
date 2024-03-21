@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja" style="font-size:20px;">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="description" content="">
+	<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+	<style>
+htnl { height: 100%; }
+body { margin: 0; padding: 0; }
+	</style>
+	<script>
+fetch('https://cal.lapis.dev/holiday.json').then((r)=>{return r.json();}).then((r)=>{console.log(r);}).catch((e)=>{console.error(e);});
+	</script>
+</head>
+<body>
+</body>
+</html>
