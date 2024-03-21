@@ -10,7 +10,20 @@ htnl { height: 100%; }
 body { margin: 0; padding: 0; }
 	</style>
 	<script>
-fetch('https://cal.lapis.dev/holiday.json').then((r)=>{return r.json();}).then((r)=>{console.log(r);}).catch((e)=>{console.error(e);});
+function loadHoliday() {
+	fetch('https://cal.lapis.dev/holiday.json').then((response) => {
+		return response.json();
+	}).then((json) => {
+		console.log(json);
+	}).catch((error) => {
+		console.error(error);
+	});
+}
+document.addEventListener('DOMContentLoaded', async () => {
+	const holiday = await loadHoliday();
+	const now = new Date();
+	document.body.innerHTML = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${holiday[now.getFullYear()][now.getMonth() + 1][now.getDate()] ? 'Holiday' : ''}`;
+});
 	</script>
 </head>
 <body>
