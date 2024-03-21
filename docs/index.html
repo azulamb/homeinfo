@@ -10,7 +10,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap" rel="stylesheet">
 	<style>
 html { height: 100%; }
-body { margin: 0; padding: 0; cursor: none; }
+body { margin: 0; padding: 0; cursor: none; overflow: none;}
 svg text { font-weight: bold; font-family: "Kiwi Maru", serif; text-align: center; fill: #ffffff; }
 svg text.black { fill: #000000; }
 	</style>
@@ -71,13 +71,14 @@ Promise.all([
 		const second = document.getElementById('second');
 		const week = document.getElementById('week');
 		const holiday = document.getElementById('holiday');
-		let prev = new Date(2000, 0, 1, 0, 0, 0);
+		let prev = new Date();
 
 		year.textContent = `${prev.getFullYear()}`;
 		month.textContent = `${prev.getMonth() + 1}`.padStart(2, '0');
 		day.textContent = `${prev.getDate()}`.padStart(2, '0');
 		hour.textContent = `${prev.getHours()}`.padStart(2, '0');
 		minute.textContent = `${prev.getMinutes()}`.padStart(2, '0');
+		week.textContent = `${WEEK[prev.getDay()]}`;
 
 		return async () => {
 			const now = new Date();
@@ -93,11 +94,6 @@ Promise.all([
 						if (now.getDate() !== prev.getDate()) {
 							day.textContent = `${now.getDate()}`.padStart(2, '0');
 
-							week.textContent = `${WEEK[now.getDay()]}`;
-
-							const holidayName = getHoliday(await loadHoliday(now), now);
-							holiday.textContent = holidayName;
-
 							if (now.getMonth() !== prev.getMonth()) {
 								month.textContent = `${now.getMonth() + 1}`.padStart(2, '0');
 
@@ -105,6 +101,10 @@ Promise.all([
 									year.textContent = `${now.getFullYear()}`;
 								}
 							}
+							week.textContent = `${WEEK[now.getDay()]}`;
+
+							const holidayName = getHoliday(await loadHoliday(now), now);
+							holiday.textContent = holidayName;
 						}
 					}
 				}
