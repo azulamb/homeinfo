@@ -11,7 +11,7 @@ body { margin: 0; padding: 0; }
 	</style>
 	<script>
 function loadHoliday() {
-	fetch('https://cal.lapis.dev/holiday.json').then((response) => {
+	return fetch('https://cal.lapis.dev/holiday.json').then((response) => {
 		return response.json();
 	}).then((json) => {
 		return json;
