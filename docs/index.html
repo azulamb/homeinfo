@@ -5,40 +5,135 @@
 	<title></title>
 	<meta name="description" content="">
 	<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap" rel="stylesheet">
 	<style>
-htnl { height: 100%; }
-body { margin: 0; padding: 0; }
+html { height: 100%; }
+body { margin: 0; padding: 0; cursor: none; }
+svg text { font-weight: bold; font-family: "Kiwi Maru", serif; text-align: center; fill: #ffffff; }
+svg text.black { fill: #000000; }
 	</style>
 	<script>
-function loadHoliday() {
-	return fetch('https://cal.lapis.dev/holiday.json').then((response) => {
-		return response.json();
-	}).then((json) => {
-		return json;
-	}).catch((error) => {
-		console.error(error);
-		return {};
-	});
-}
-document.addEventListener('DOMContentLoaded', async () => {
-	const holiday = await loadHoliday();
-	function isHoliday(date) {
-		const y = date.getFullYear();
-		const m = date.getMonth() + 1;
-		const d = date.getDate();
-		if (!holiday[y]) {
-			return false;
-		}
-		if (!holiday[y][m]) {
-			return false;
-		}
-		return holiday[y][m][d] ? true : false;
+const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
+
+function getHoliday(holiday, date) {
+	const y = date.getFullYear();
+	const m = date.getMonth() + 1;
+	const d = date.getDate();
+	if (!holiday[y]) {
+		return '';
 	}
-	const now = new Date();
-	document.body.innerHTML = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${isHoliday(now) ? 'Holiday' : ''}`;
+	if (!holiday[y][m]) {
+		return '';
+	}
+	return holiday[y][m][d] || '';
+}
+
+Promise.all([
+	(async (prev) => {
+		function load() {
+			return fetch('https://cal.lapis.dev/holiday.json').then((response) => {
+				return response.json();
+			}).then((json) => {
+				return json;
+			}).catch((error) => {
+				console.error(error);
+				return null;
+			});
+		}
+		let holiday = (await load()) || {};
+
+		return async (now) => {
+			if (now.getDate() === prev.getDate()) {
+				return holiday;
+			}
+			prev = now;
+			return load().then((result) => {
+				if (result) {
+					holiday = result;
+				}
+				return holiday;
+			});
+		};
+	})(new Date()),
+	new Promise((resolve) => {
+		document.addEventListener('DOMContentLoaded', resolve);
+	}),
+]).then(async (results) => {
+	const [loadHoliday] = results;
+	const update = (() => {
+		const year = document.getElementById('year');
+		const month = document.getElementById('month');
+		const day = document.getElementById('day');
+		const hour = document.getElementById('hour');
+		const minute = document.getElementById('minute');
+		const second = document.getElementById('second');
+		const week = document.getElementById('week');
+		const holiday = document.getElementById('holiday');
+		let prev = new Date(2000, 0, 1, 0, 0, 0);
+
+		year.textContent = `${prev.getFullYear()}`;
+		month.textContent = `${prev.getMonth() + 1}`.padStart(2, '0');
+		day.textContent = `${prev.getDate()}`.padStart(2, '0');
+		hour.textContent = `${prev.getHours()}`.padStart(2, '0');
+		minute.textContent = `${prev.getMinutes()}`.padStart(2, '0');
+
+		return async () => {
+			const now = new Date();
+			if (now.getSeconds() !== prev.getSeconds()) {
+				second.textContent = `${now.getSeconds()}`.padStart(2, '0');
+
+				if (now.getMinutes() !== prev.getMinutes()) {
+					minute.textContent = `${now.getMinutes()}`.padStart(2, '0');
+
+					if (now.getHours() !== prev.getHours()) {
+						hour.textContent = `${now.getHours()}`.padStart(2, '0');
+
+						if (now.getDate() !== prev.getDate()) {
+							day.textContent = `${now.getDate()}`.padStart(2, '0');
+
+							week.textContent = `${WEEK[now.getDay()]}`;
+
+							const holidayName = getHoliday(await loadHoliday(now), now);
+							holiday.textContent = holidayName;
+
+							if (now.getMonth() !== prev.getMonth()) {
+								month.textContent = `${now.getMonth() + 1}`.padStart(2, '0');
+
+								if (now.getFullYear() !== prev.getFullYear()) {
+									year.textContent = `${now.getFullYear()}`;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			prev = now;
+
+			setTimeout(update, 100);
+		};
+	})();
+
+	await update();
 });
 	</script>
 </head>
 <body>
+	<svg width="1024" height="768" viewBox="0 0 1024 768" version="1.1">
+		<circle cx="120" cy="140" r="280" style="fill:#204eb3;stroke-width:10" />
+		<circle cx="1024" cy="768" r="308" style="fill:#204eb3;stroke-width:11" />
+		<text id="year" x="160" y="80" style="font-size:85.3333px;text-anchor:middle"></text>
+		<text id="month" x="140" y="220" style="font-size:120px;text-anchor:middle"></text>
+		<text id="day" x="260" y="340" style="font-size:120px;text-anchor:middle"></text>
+		<path d="M 120,300 260,160" style="fill:#ffffff;stroke:#ffffff;stroke-width:10;stroke-linecap:round;"/>
+		<text id="week" x="900" y="660" style="font-size:160px;text-anchor:middle"></text>
+		<text id="holiday" x="1002" y="740" style="font-size:64px;text-anchor:end"></text>
+		<text id="hour" x="660" y="240" class="black" style="font-size:213.33333333px;text-anchor:end;"></text>
+		<text x="700" y="240" class="black" style="font-size:213.33333333px;text-anchor:middle;">:</text>
+		<text id="minute" x="740" y="240" class="black" style="font-size:213.33333333px;text-anchor:start;"></text>
+		<text id="second" x="700" y="280" class="black" style="font-size:60px;text-anchor:middle;"></text>
+	</svg>
 </body>
 </html>
