@@ -22,8 +22,20 @@ function loadHoliday() {
 }
 document.addEventListener('DOMContentLoaded', async () => {
 	const holiday = await loadHoliday();
+	function isHoliday(date) {
+		const y = date.getFullYear();
+		const m = date.getMonth() + 1;
+		const d = date.getDate();
+		if (!holiday[y]) {
+			return false;
+		}
+		if (!holiday[y][m]) {
+			return false;
+		}
+		return holiday[y][m][d] ? true : false;
+	}
 	const now = new Date();
-	document.body.innerHTML = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${holiday[now.getFullYear()][now.getMonth() + 1][now.getDate()] ? 'Holiday' : ''}`;
+	document.body.innerHTML = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${isHoliday(now) ? 'Holiday' : ''}`;
 });
 	</script>
 </head>
