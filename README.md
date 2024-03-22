@@ -2,6 +2,9 @@
 
 ## Setup
 
+```
+sudo apt install xdotool
+```
 
 ```
 sudo raspi-config
